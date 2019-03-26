@@ -5,14 +5,15 @@ For UFV Capstone project
 
 Requirments
 --
-- Python 3.7
+- Python 3.6 (NOT 3.7)
 - Python-opcua Library
 - Python Flask Library
 
 Environment Settings
 --
 - HMI 192.168.0.211:4870
-- No Encryption or Signing
+- Policy:Basic128Rsa15
+- MessageSecurityMode: None
 
 App Requirments
 ---
