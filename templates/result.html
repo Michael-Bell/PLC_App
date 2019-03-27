@@ -13,6 +13,9 @@
                <td> {{ value }} </td>
             </tr>
          {% endfor %}
+       {% for message in get_flashed_messages() %}
+    <p style="color: red;">{{ message }}</p>
+    {% endfor %}
       </table>
    </body>
 </html>
