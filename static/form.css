@@ -1,0 +1,40 @@
+/*
+   Drink Form Stylesheet
+   Author: Andrew Ott
+   Date:   03-26-2019
+*/
+body
+{
+	font-size: 100%;
+}
+
+#logoIMG
+{
+	width:100px;
+	height:100px;
+}
+
+#title
+{
+	vertical-align: middle;
+	font-size: 5em;
+	padding-left: 15px;
+}
+
+.jumbotron
+{
+	background-color:#008080;
+	color:white;
+}
+
+.tab-content 
+{
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	padding: 10px;
+}
+.nav-tabs 
+{
+	margin-bottom: 0;
+}
