@@ -1,29 +1,53 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <link rel="stylesheet" type="text/css" href="static/bootstrap.css">
+	<!--
+      Drink Form Page
+      Author: Andrew Ott
+      Date:   03-26-2019
+	-->
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width = device-width, initial-scale = 1">
+		<link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="/static/form.css">
+	</head>
+	
+	<body>
+		<form action = "/result" method = "POST">
+			<div class="container">
+				<div class="jumbotron">
+					<img src="/static/cup.png" id="logoIMG" alt="cup">
+					<span id="title">Online Drink Order</span>
+				</div>
+				
+				<div class="jumbotron">
+				<p>Name <input type = "text" name = "name" /></p>
+				<p>Lid?
+					<input checked  type = "radio" value="true" id="lid" name = "lid" /><label for="lid">With Lid</label>
+					<input type = "radio" value="false" id="nolid" name = "lid" /><label for="lid">No Lid</label>
+				</p>
 
-</head>
-   <body>
-      <form action = "/result" method = "POST">
-         <p>Name <input type = "text" name = "name" /></p>
-         <p>Lid?
-             <input checked  type = "radio" value="true" id="lid" name = "lid" /><label for="lid">With Lid</label>
-             <input type = "radio" value="false" id="nolid" name = "lid" /><label for="lid">No Lid</label>
-         </p>
+				<p>Dye?
+					<input checked type = "radio" value="true" id="dye" name = "dye" /><label for="dye">With Dye</label>
+					<input type = "radio" value="false" id="nodye" name = "dye" /><label for="nodye">No Dye</label>
+				</p>
 
-          <p>Dye?
-             <input checked type = "radio" value="true" id="dye" name = "dye" /><label for="dye">With Dye</label>
-             <input type = "radio" value="false" id="nodye" name = "dye" /><label for="nodye">No Dye</label>
-         </p>
-
-         <p>Location <select type ="" name = "table" >
-             <option value="one">Table 1</option>
-             <option value="two">Table 2</option>
-             <option value="three">Table 3</option>
-             <option value="four">Mobile Order</option>
-         </select>
-         </p>
-         <p><input type = "submit" value = "submit" /></p>
-      </form>
+				<p>Location 
+					<select type ="" name = "table" >
+						<option value="1">Table 1</option>
+						<option value="2">Table 2</option>
+						<option value="3">Table 3</option>
+						<option value="4">Mobile Order</option>
+					</select>
+				</p>
+				
+				<button type="submit" class="btn-primary btn-lg"/>Submit</button>
+				</div>
+			</div>
+		</form>
+	  
+		<script src="/static/jquery-3.3.1.min.js"></script>
+		<script src="/static/bootstrap.min.js"></script>
    </body>
 </html>
