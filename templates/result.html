@@ -1,21 +1,31 @@
 <!doctype html>
-<html><head>
-    <link rel="stylesheet" type="text/css" href="static/bootstrap.css">
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../static/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="form.css">
+		<link href="https://fonts.googleapis.com/css?family=Bree+Serif" rel="stylesheet">
+	</head>
 
-</head>
-   <body>
-   Your Order has been submitted!
+	<body>
+		<div class="container">
+			<div class="jumbotron">
+			<span id="submitMSG">Your Order has been submitted!</span>
+			</div>
 
-      <table border = 1>
-         {% for key, value in result.items() %}
-            <tr>
-               <th> {{ key }} </th>
-               <td> {{ value }} </td>
-            </tr>
-         {% endfor %}
-       {% for message in get_flashed_messages() %}
-    <p style="color: red;">{{ message }}</p>
-    {% endfor %}
-      </table>
-   </body>
+			<div class="jumbotron">
+			<table class="table-bordered table-primary">
+				{% for key, value in result.items() %}
+					<tr>
+						<th class="text-center"> {{ key }} </th>
+						<td class="text-center"> {{ value }} </td>
+					</tr>
+				{% endfor %}
+			</table>
+			</div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+		<script src="static/bootstrap.min.js"></script>
+	</body>
+   
 </html>
