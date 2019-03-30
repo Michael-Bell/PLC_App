@@ -5,7 +5,7 @@ from flask import Flask, request, render_template
 from flask_rq2 import RQ
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
 
 rq = RQ(app)
 
@@ -58,15 +58,14 @@ def mresult():
 
 
 
-print("HI")
 rq.init_app(app)
-from jobs import checkHMI
+#from jobs import checkHMI
 
-checkHMI.cron('* * * * *', 'Check-HMI', 1, 2)
+#checkHMI.cron('* * * * *', 'Check-HMI', 1, 2)
 
 if __name__ == '__main__':
     from jobs import rq
 
     print("HI")
     rq.init_app(app)
-    app.run()
+    app.run(host='0.0.0.0')

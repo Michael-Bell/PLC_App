@@ -1,0 +1,30 @@
+version: '2'
+services:
+    web:
+        build: .
+        ports:
+            - 5000:5000
+        volumes:
+            - .:/code
+        depends_on:
+            - rq-server
+    rq-server:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+    rq-dashboard:
+      image: jaredv/rq-docker:0.0.2
+      command: rq-dashboard -H rq-server
+      ports:
+        - 9181:9181
+
+    rq-worker:
+      image: jaredv/rq-docker:0.0.2
+      command: rq worker -u redis://rq-server:6379 high normal low
+      volumes:
+        - .:/usr/src/app
+    rq-worker-orders:
+      image: jaredv/rq-docker:0.0.2
+      command: bash -c "pip install -r requirements.txt & rq worker -u redis://rq-server:6379 orders"
+      volumes:
+        - .:/usr/src/app
