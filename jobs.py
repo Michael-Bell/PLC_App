@@ -3,7 +3,6 @@ from time import sleep
 from flask_rq2 import RQ
 from opcua import Client
 from opcua.ua import VariantType
-
 rq = RQ()
 
 
@@ -52,6 +51,10 @@ def orderProcess(q):
     M_process.set_value(True)
     print("process")
     awaitOrder.set_value(False)
+    # Now monitor for status int changes
+    orderStatusCode = client.get_node()
+    job = rq.get
+
     client.disconnect()
     print("disconnect")
 

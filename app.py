@@ -5,7 +5,7 @@ from flask import Flask, request, render_template
 from flask_rq2 import RQ
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
 
 rq = RQ(app)
 
@@ -34,6 +34,7 @@ def result():
         from jobs import orderProcess
         job = orderProcess.queue(data, queue='orders')
         print(job.result)
+        print(job.id)
         return render_template("result.html", result=result1)
 
 

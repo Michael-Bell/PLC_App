@@ -8,6 +8,9 @@ services:
             - .:/code
         depends_on:
             - rq-server
+            - rq-dashboard
+            - rq-worker
+            - rq-worker-orders
     rq-server:
         image: redis:alpine
         ports:
@@ -23,8 +26,12 @@ services:
       command: rq worker -u redis://rq-server:6379 high normal low
       volumes:
         - .:/usr/src/app
+      depends_on:
+        - rq-server
     rq-worker-orders:
       image: jaredv/rq-docker:0.0.2
       command: bash -c "pip install -r requirements.txt & rq worker -u redis://rq-server:6379 orders"
       volumes:
         - .:/usr/src/app
+      depends_on:
+        - rq-server
