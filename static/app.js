@@ -52,12 +52,13 @@ $('#orderButton').on('click', function () {
                 });
             $('#orderConfirm').show()
             $('#statustable').show();
-
+            $('#orderID').text(res[0])
+            $('#smallOrderID').show();
         });
 });
 $('#orderConfirm').hide()
 $('#statustable').hide()
-
+$('#smallOrderID').hide();
 
 function getStatus(taskID) {
     $.ajax({
@@ -66,14 +67,12 @@ function getStatus(taskID) {
     })
         .done((res) => {
             console.log(res);
-
-            const html = `
-      <tr>
-        <td>${res.data.task_id}</td>
-        <td>${res.data.task_status}</td>
-        <td>${res.data.task_result}</td>
-      </tr>`
-            $('#tasks').html(html);
+            console.log(res.data.task_percent)
+            $("#orderProgressBar").width(res.data.task_percent + "%").attr("aria-valuenow", res.data.task_percent);
+            if (res.data.task_percent == 100) {
+                $("#orderProgressBar").addClass("bg-success").removeClass("progress-bar-striped");
+            }
+            $('.orderStatus').text(res.data.task_status);
             const taskStatus = res.data.task_status;
             if (taskStatus === 'Success' || taskStatus === 'failed') return false;
             setTimeout(function () {

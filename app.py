@@ -59,7 +59,7 @@ def get_status(task_id):
             elif task.meta['progress'] <= 6:
                 status = "On Conveyor"
             elif (task.meta['progress'] <= 8 and task.meta['lid'] == "true"):
-                status = "Lid Sation"
+                status = "Lid Station"
             elif task.meta['progress'] <= 9:
                 status = "Kuka arm to table"
             else:
@@ -67,6 +67,14 @@ def get_status(task_id):
         except TypeError:
             if task.meta['progress'] == "Success":
                 status = "Success"
+        try:
+            if 0 <= task.meta['progress'] <= 10:
+                task_percent = task.meta['progress'] * 10
+        except (TypeError, KeyError):
+            if (task.meta == {} or task.get_status() == 'queued'):
+                task_percent = 0
+            else:
+                task_percent = 100
         print(task.meta)
         print(task)
         print("RESULT" + str(task.result))
@@ -77,6 +85,7 @@ def get_status(task_id):
                 'task_id': task.get_id(),
                 'task_status': status,
                 'task_result': task.result,
+                'task_percent': task_percent,
             }
         }
     else:
