@@ -11,6 +11,8 @@ services:
             - rq-dashboard
             - rq-worker
             - rq-worker-orders
+        restart_policy:
+            condition: always
     rq-server:
         image: redis:alpine
         ports:
