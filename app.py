@@ -7,7 +7,7 @@ from flask_rq2 import RQ
 from rq import Queue, Connection
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
 
 rq = RQ(app)
 
