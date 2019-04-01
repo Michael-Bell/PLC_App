@@ -13,7 +13,10 @@
 			</div>
 
 			<div class="jumbotron">
-			<table class="table-bordered table-primary">
+                <tr>
+                    <th class="text-center"> {{ id }} </th>
+
+                    <table class="table-bordered table-primary">
 				{% for key, value in result.items() %}
 					<tr>
 						<th class="text-center"> {{ key }} </th>

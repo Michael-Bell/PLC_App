@@ -15,14 +15,14 @@
 	</head>
 	
 	<body>
-		<form action = "/result" method = "POST">
+
 			<div class="container">
 				<div class="jumbotron">
 					<img src="/static/cup.png" id="logoIMG" alt="cup">
 					<span id="title">Online Drink Order</span>
 				</div>
-				
-				<div class="jumbotron">
+
+                <div id="formDiv" class="jumbotron">
 				<p id="line1">Name: &nbsp <input type = "text" name = "name" /></p>
 				<p id="line2">Lid: &nbsp
 					<input checked  type = "radio" value="true" id="lid" name = "lid" /><label for="lid">
@@ -44,13 +44,43 @@
 						<option value="3">Mobile Order</option>
 					</select>
 				</p>
-				
-				<span id="line5"><button type="submit" class="btn-primary btn-lg"/>Submit</button></span>
+
+                    <span id="line5"><button type="submit" class="btn-primary btn-lg"
+                                             id="orderButton">Submit</button></span>
 				</div>
 			</div>
-		</form>
-	  
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+            <div id="orderConfirm" class="jumbotron">
+                <h2 id="respName">Hello </h2>
+                <p>Thank you for placing an order. You have selected a drink <b id="respDye"></b> dye and <b
+                        id="respLid"></b> a lid. You can pickup this order at <b id="respTable"></b></p>
+
+            </div>
+            <div id="statustable" class="jumbotron">
+
+                <h3>Task Status</h3>
+                <br>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Status</th>
+                        <th>Result</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tasks">
+                    <tr>
+                        <td>c0568b1c-1664-41d2-a98c-703486bd0c63</td>
+                        <td>7</td>
+                        <td>null</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <script src="/static/jquery-3.3.1.min.js"></script>
 		<script src="/static/bootstrap.min.js"></script>
-   </body>
+            <script src="/static/app.js"></script>
+
+    </body>
 </html>

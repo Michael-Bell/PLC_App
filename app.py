@@ -1,8 +1,10 @@
 from collections import deque
 from time import sleep
 
-from flask import Flask, request, render_template
+import redis
+from flask import Flask, request, render_template, jsonify
 from flask_rq2 import RQ
+from rq import Queue, Connection
 
 app = Flask(__name__)
 app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
@@ -28,18 +30,61 @@ def menu():
 @app.route('/result', methods=['POST'])
 def result():
     if request.method == 'POST':
-        result1 = request.form
         data = request.form.to_dict()
         print(data)
         from jobs import orderProcess
         job = orderProcess.queue(data, queue='orders')
-        print(job.result)
-        print(job.id)
-        return render_template("result.html", result=result1)
+        returnData = [job.id, request.form]
+        print(returnData)
+        # return render_template("result.html", result=result1, id=job.id)
+        return jsonify(returnData), 202
+
+
+@app.route('/tasks/<task_id>', methods=['GET'])
+def get_status(task_id):
+    with Connection(redis.from_url(app.config['RQ_REDIS_URL'])):
+        print("getting status" + task_id)
+        q = Queue('orders')
+        task = q.fetch_job(task_id)
+        status = "error"
+        try:
+            if task.get_status() == "queued":
+                status = "queued"
+            elif task.meta == {}:
+                status = "starting"
+            elif task.meta['progress'] <= 1:
+                status = "On Conveyor"
+            elif task.meta['progress'] <= 3:
+                status = "Filling Bottle"
+            elif task.meta['progress'] <= 6:
+                status = "On Conveyor"
+            elif (task.meta['progress'] <= 8 and task.meta['lid'] == "true"):
+                status = "Lid Sation"
+            elif task.meta['progress'] <= 9:
+                status = "Kuka arm to table"
+            else:
+                status = "def"
+        except TypeError:
+            if task.meta['progress'] == "Success":
+                status = "Success"
+        print(task.meta)
+        print(task)
+        print("RESULT" + str(task.result))
+    if task:
+        response_object = {
+            'status': 'success',
+            'data': {
+                'task_id': task.get_id(),
+                'task_status': status,
+                'task_result': task.result,
+            }
+        }
+    else:
+        response_object = {'status': 'error'}
+    return jsonify(response_object)
 
 
 from jobs import rq
-
 
 @app.route('/manual')  # if http://{url}/manual is requested by a browser
 def manMode():
