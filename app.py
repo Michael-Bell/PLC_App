@@ -7,7 +7,7 @@ from flask_rq2 import RQ
 from rq import Queue, Connection
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
 
 rq = RQ(app)
 
@@ -47,34 +47,48 @@ def get_status(task_id):
         q = Queue('orders')
         task = q.fetch_job(task_id)
         status = "error"
+        print("META: " + str(task.meta))
+        print(task.get_status())
+        task_percent=0
         try:
-            if task.get_status() == "queued":
-                status = "queued"
-            elif task.meta == {}:
-                status = "starting"
-            elif task.meta['progress'] <= 1:
-                status = "On Conveyor"
-            elif task.meta['progress'] <= 3:
-                status = "Filling Bottle"
-            elif task.meta['progress'] <= 6:
-                status = "On Conveyor"
-            elif (task.meta['progress'] <= 8 and task.meta['lid'] == "true"):
-                status = "Lid Station"
-            elif task.meta['progress'] <= 9:
-                status = "Kuka arm to table"
-            else:
-                status = "def"
-        except TypeError:
-            if task.meta['progress'] == "Success":
-                status = "Success"
-        try:
+            if (task.meta=={'lid': 'true'} or task.meta=={'lid': 'false'}):
+                task_percent = "Next in line"
             if 0 <= task.meta['progress'] <= 10:
                 task_percent = task.meta['progress'] * 10
-        except (TypeError, KeyError):
-            if (task.meta == {} or task.get_status() == 'queued'):
+        except (TypeError):
+            if ( task.get_status() == 'queued'):
                 task_percent = 0
             else:
                 task_percent = 100
+        except (KeyError):
+            if(task.get_status()!= "queued" ):
+                status = "Next in Line"
+            else:
+                status = "Queued"
+        try:
+            if task.meta['progress'] == 0:
+                status = "Next in Line"
+            elif 0<task.meta['progress'] <= 1:
+                status = "On Conveyor"
+            elif 1<task.meta['progress'] <= 3:
+                status = "Filling Bottle"
+            elif 3<task.meta['progress'] <= 6:
+                status = "On Conveyor"
+            elif 6<task.meta['progress'] <= 8 :
+                status = "Waiting for Kuka Arm"
+                if task.meta['lid'] == "true":
+                    status = "Lid Station"
+
+            elif 8<task.meta['progress'] <= 10:
+                status = "Kuka arm to table"
+            else:
+                status = "def"
+        except (TypeError):
+            if task.meta['progress'] == "Success":
+                status = "Success"
+        except KeyError:
+            print("keyError")
+
         print(task.meta)
         print(task)
         print("RESULT" + str(task.result))
