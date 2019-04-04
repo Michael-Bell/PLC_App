@@ -25,9 +25,17 @@ services:
       depends_on:
         - rq-server
       restart: always
-    shepherd:
-      image: mazzolino/shepherd
+    ouroboros:
+      container_name: ouroboros
+      hostname: ouroboros
+      image: pyouroboros/ouroboros
+      environment:
+        - CLEANUP=true
+        - INTERVAL=60
+        - LOG_LEVEL=info
+        - SELF_UPDATE=true
+        - TZ=America/Vancouver
+        - LATEST=true
+      restart: always
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-      environment:
-        - SLEEP_TIME="30s"
