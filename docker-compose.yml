@@ -29,12 +29,9 @@ services:
         - .:/usr/src/app
       depends_on:
         - rq-server
-    rq-worker-orders:
-      image: m8377/plc_app_ufv
-      command: rq worker -u redis://rq-server:6379 orders
+    shepherd:
+      image: mazzolino/shepherd
       volumes:
-        - .:/usr/src/app
-      depends_on:
-        - rq-server
-      restart: always
-
+        - /var/run/docker.sock:/var/run/docker.sock
+      environment:
+        - SLEEP_TIME="30s"
