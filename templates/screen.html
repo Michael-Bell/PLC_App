@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<!--
+  Drink Form Page
+  Author: Andrew Ott
+  Date:   03-26-2019
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width = device-width, initial-scale = 1">
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/static/form.css">
+    <link rel="stylesheet" type="text/css" href="/static/app.css">
+    <link href="https://fonts.googleapis.com/css?family=Bree+Serif" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="container">
+
+<div id="orderConfirm" class="jumbotron">
+
+    <div id="orderInProgress" class="jumbotron">
+            <div class="progress position-relative" style="height: 4em;">
+        <div id="orderProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+             aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div class="orderStatus progress-bar-title"></div>
+    </div>
+    </div>
+
+    <div id="orderQueue" class="jumbotron">
+
+    </div>
+
+        <div id="orderComplete" class="jumbotron">
+
+    </div>
+
+<small id="smallOrderID">Order ID: <i id="orderID"></i></small>
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script src="/static/bootstrap.min.js"></script>
+<script src="/static/screen.js"></script>
+
+</body>
+</html>

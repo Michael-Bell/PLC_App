@@ -1,7 +1,7 @@
 version: '2'
 services:
     web:
-        build: .
+        image: m8377/plc_app_ufv
         ports:
             - 5000:5000
             - 80:5000
@@ -17,12 +17,12 @@ services:
         image: redis:alpine
         ports:
           - 6379:6379
+        restart: always
     rq-dashboard:
       image: jaredv/rq-docker:0.0.2
       command: rq-dashboard -H rq-server
       ports:
         - 9181:9181
-
     rq-worker:
       image: jaredv/rq-docker:0.0.2
       command: rq worker -u redis://rq-server:6379 high normal low
@@ -31,9 +31,11 @@ services:
       depends_on:
         - rq-server
     rq-worker-orders:
-      image: jaredv/rq-docker:0.0.2
-      command: bash -c "pip install -r requirements.txt & rq worker -u redis://rq-server:6379 orders"
+      image: m8377/rq_worker_ufv_plc
+      command: rq worker -u redis://rq-server:6379 orders
       volumes:
         - .:/usr/src/app
       depends_on:
         - rq-server
+      restart: always
+

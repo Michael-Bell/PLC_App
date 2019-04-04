@@ -12,8 +12,9 @@ app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
 rq = RQ(app)
 
 dq = deque()
-
-
+jobQueue=[]
+jobDone=[]
+jobWork = []
 @app.route('/add/<int:x>/<int:y>')
 def add(x, y):
     from jobs import calculate
@@ -26,29 +27,41 @@ def add(x, y):
 def menu():
     return render_template('form.html')
 
+@app.route('/screen')
+def screen():
+    return render_template('screen.html')
 
 @app.route('/result', methods=['POST'])
 def result():
     if request.method == 'POST':
         data = request.form.to_dict()
-        print(data)
+        #print(data)
         from jobs import orderProcess
         job = orderProcess.queue(data, queue='orders')
         returnData = [job.id, request.form]
-        print(returnData)
+        jobQueue.append(job.id)
+        #print(returnData)
         # return render_template("result.html", result=result1, id=job.id)
         return jsonify(returnData), 202
 
+@app.route('/updatescreen',methods=['GET'])
+def updateScreen():
+    print(jobQueue)
+    response_object = {
+        'status': 'success',
+        'data': {"q":jobQueue,
+                 "w": jobWork,
+                 "d": jobDone}
+    }
+
+    return jsonify(response_object)
 
 @app.route('/tasks/<task_id>', methods=['GET'])
 def get_status(task_id):
     with Connection(redis.from_url(app.config['RQ_REDIS_URL'])):
-        print("getting status" + task_id)
         q = Queue('orders')
         task = q.fetch_job(task_id)
         status = "error"
-        print("META: " + str(task.meta))
-        print(task.get_status())
         task_percent=0
         try:
             if (task.meta=={'lid': 'true'} or task.meta=={'lid': 'false'}):
@@ -87,11 +100,8 @@ def get_status(task_id):
             if task.meta['progress'] == "Success":
                 status = "Success"
         except KeyError:
-            print("keyError")
+            print("")
 
-        print(task.meta)
-        print(task)
-        print("RESULT" + str(task.result))
     if task:
         response_object = {
             'status': 'success',
@@ -119,8 +129,8 @@ def mresult():
     if request.method == 'POST':
         result = request.form
         data = request.form.to_dict()
-        print(data)
-        print(data['runmode'])  # Print selected run options for
+        #print(data)
+        #print(data['runmode'])  # Print selected run options for
         from jobs import manualMode
         job = manualMode.queue(data)
         return render_template("result.html", result=result)
