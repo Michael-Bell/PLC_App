@@ -4,12 +4,9 @@ services:
         image: m8377/plc_app_ufv
         ports:
             - 5000:5000
-        volumes:
-            - .:/code
         depends_on:
             - rq-server
             - rq-dashboard
-            - rq-worker
             - rq-worker-orders
         restart: always
     rq-server:
@@ -22,13 +19,12 @@ services:
       command: rq-dashboard -H rq-server
       ports:
         - 9181:9181
-    rq-worker:
-      image: jaredv/rq-docker:0.0.2
-      command: rq worker -u redis://rq-server:6379 high normal low
-      volumes:
-        - .:/usr/src/app
+    rq-worker-orders:
+      image: m8377/plc_app_ufv
+      command: rq worker -u redis://rq-server:6379 orders
       depends_on:
         - rq-server
+      restart: always
     shepherd:
       image: mazzolino/shepherd
       volumes:
