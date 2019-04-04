@@ -68,34 +68,29 @@ def get_status(task_id):
                 task_percent = "Next in line"
             if 0 <= task.meta['progress'] <= 10:
                 task_percent = task.meta['progress'] * 10
-        except (TypeError):
-            if ( task.get_status() == 'queued'):
-                task_percent = 0
-            else:
-                task_percent = 100
         except (KeyError):
-            if(task.get_status()!= "queued" ):
-                status = "Next in Line"
-            else:
-                status = "Queued"
+            status = "Queued"
         try:
             if task.meta['progress'] == 0:
                 status = "Next in Line"
-            elif 0<task.meta['progress'] <= 1:
-                status = "On Conveyor"
-            elif 1<task.meta['progress'] <= 3:
+            elif task.meta['progress'] == 1:
+                status = "System Initializing"
+            elif task.meta['progress'] == 2:
+                status = "Loading Bottle on belt"
+            elif task.meta['progress'] == 3:
                 status = "Filling Bottle"
-            elif 3<task.meta['progress'] <= 6:
-                status = "On Conveyor"
-            elif 6<task.meta['progress'] <= 8 :
+            elif task.meta['progress'] == 4:
+                status = "Bottle Filled"
+            elif task.meta['progress'] == 5:
+                status = "On Belt"
+            elif task.meta['progress'] == 6:
                 status = "Waiting for Kuka Arm"
-                if task.meta['lid'] == "true":
-                    status = "Lid Station"
-
-            elif 8<task.meta['progress'] <= 10:
-                status = "Kuka arm to table"
+            elif task.meta['progress'] == 7:
+                status = "At Lid Station"
+            elif task.meta['progress'] == 8:
+                status = "Success"
             else:
-                status = "def"
+                status = "Unknown Status"
         except (TypeError):
             if task.meta['progress'] == "Success":
                 status = "Success"

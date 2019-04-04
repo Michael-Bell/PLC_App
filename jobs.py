@@ -82,27 +82,7 @@ def orderProcess(q):
         while orderJob.meta['progress'] != "Success":
             client.disconnect()
             client.connect()
-            DO_Belt = client.get_node("ns=4;s=DO_Belt").get_value()
-            DI_Bottle_queue = client.get_node("ns=4;s=DI_Bottle_Queue").get_value()
-            DI_Bottle_Filled = client.get_node("ns=4;s=DI_Bottle_Filled").get_value()
-            DI_Bottle_Ready = client.get_node("ns=4;s=DI_Bottle_Ready_to_fill").get_value()
-            #print({DO_Belt,DI_Bottle_queue,DI_Bottle_Filled,DI_Bottle_Ready})
-            if  DO_Belt:
-                progressInt = progressInt+.1
-            elif DI_Bottle_Ready :
-                if progressInt < 1:
-                    progressInt=1
-                else:
-                    progressInt=progressInt+.5
-            elif DI_Bottle_Filled :
-                #print("DIBOTTLEFILLED")
-                if progressInt < 3:
-                    progressInt=3
-                else:
-                    progressInt = progressInt+.3
-            if progressInt >= 10:
-                progressInt  = "Success"
-            orderJob.meta['progress'] = progressInt
+            orderJob.meta['progress'] = client.get_node("ns=4;s=M_NDYE_INT").get_value()
             orderJob.save_meta()
             sleep(1)
 
