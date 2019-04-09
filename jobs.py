@@ -96,7 +96,7 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q):
         orderJob.meta['progress'] = "Success"
         orderJob.save_meta()
     else:
-        while orderJob.meta['progress'] != "Success":
+        while orderJob.meta['progress'] != 8:
             client.disconnect()
             client.connect()
             orderJob.meta['progress'] = client.get_node(updateInt).get_value()
