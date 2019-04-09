@@ -26,11 +26,11 @@ def DyeOrder(q):
 
 @rq.job
 def NoDyeOrder(q):
-    awaitOrder = "ns=4;s=M_Awaiting_Order"
-    lidNoLid = "ns=4;s=M_Lid_or_No_Lid"
-    tableLoc = "ns=4;s=M_Table_location"
-    MProc = "ns=4;s=M_Send_Order"
-    updateInt = "ns=4;s=M_NDYE_INT"
+    awaitOrder = "ns=4;s=NDYE_Awaiting_Order"
+    lidNoLid = "ns=4;s=NDYE_Lid_or_No_Lid"
+    tableLoc = "ns=4;s=NDYE_Table_location"
+    MProc = "ns=4;s=NDYE_Send_order"
+    updateInt = "ns=4;s=NDYE_Fill_No_DYE_STAT_INT"
     orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
 
 
