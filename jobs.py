@@ -16,11 +16,11 @@ def calculate(x, y):
 
 @rq.job
 def DyeOrder(q):
-    awaitOrder = "ns=4;s=M_Awaiting_Order"
-    lidNoLid = "ns=4;s=M_Lid_or_No_Lid"
-    tableLoc = "ns=4;s=M_Table_location"
+    awaitOrder = "ns=4;s=M_DYE_Awaiting_Order"
+    lidNoLid = "ns=4;s=M_DYE_Lid_or_No_Lid"
+    tableLoc = "ns=4;s=M_DYE_Table_location"
     MProc = "ns=4;s=M_Send_Order"
-    updateInt = "ns=4;s=M_NDYE_INT"
+    updateInt = "ns=4;s=M_DYE_INT"
     orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
 
 
