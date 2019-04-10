@@ -8,7 +8,8 @@ services:
         depends_on:
             - rq-server
             - rq-dashboard
-            - rq-worker-orders
+            - rq-worker-Dye
+            - rq-worker-NoDye
         restart: always
     rq-server:
         image: redis:alpine
@@ -20,9 +21,15 @@ services:
       command: rq-dashboard -H rq-server
       ports:
         - 9181:9181
-    rq-worker-orders:
+    rq-worker-NoDye:
       image: m8377/plc_app_ufv
-      command: rq worker -u redis://rq-server:6379 orders
+      command: rq worker -u redis://rq-server:6379 NoDye
+      depends_on:
+        - rq-server
+      restart: always
+    rq-worker-Dye:
+      image: m8377/plc_app_ufv
+      command: rq worker -u redis://rq-server:6379 Dye
       depends_on:
         - rq-server
       restart: always

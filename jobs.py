@@ -14,10 +14,34 @@ def calculate(x, y):
     return x+y
 
 @rq.job
-def orderProcess(q):
+def DyeOrder(q):
+    awaitOrder = "ns=4;s=M_Awaiting_Order"
+    lidNoLid = "ns=4;s=M_Lid_or_No_Lid"
+    tableLoc = "ns=4;s=M_Table_location"
+    MProc = "ns=4;s=M_Send_Order"
+    updateInt = "ns=4;s=M_NDYE_INT"
+    orderProcess(awaitOrder,lidNoLid,tableLoc, MProc, updateInt,q)
+
+
+@rq.job
+def NoDyeOrder(q):
+    awaitOrder = "ns=4;s=M_Awaiting_Order"
+    lidNoLid = "ns=4;s=M_Lid_or_No_Lid"
+    tableLoc = "ns=4;s=M_Table_location"
+    MProc = "ns=4;s=M_Send_Order"
+    updateInt = "ns=4;s=M_NDYE_INT"
+    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q)
+
+
+def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q):
     orderJob = get_current_job()
     orderJob.meta['lid'] = q["lid"]
+    orderJob.meta['progress'] = 0
     orderJob.save_meta()
+    print(orderJob)
+    print(orderJob.meta)
+    print(orderJob.kwargs)
+
     #print(q)
     #print(q["lid"])
     #print(q["dye"])
@@ -28,32 +52,24 @@ def orderProcess(q):
         client = Client("opc.tcp://192.168.0.211:4870")  # Set OPC-UA Server
         #print("STOP")
         client.connect()
-        awaitOrder = client.get_node("ns=4;s=M_Awaiting_Order")
+        awaitOrder = client.get_node(awaitOrder)
         while awaitOrder.get_value() is False:
             #print("HMI Not ready")
             sleep(1.0)
         #print("HMI is ready. Loading Values")
-        M_Lid = client.get_node("ns=4;s=M_Lid_or_No_Lid")
+        M_Lid = client.get_node(lidNoLid)
         #print("Q" + q["lid"])
         if q["lid"] == "true":
             t = True
         else:
             t = False
         M_Lid.set_value(t)
-        #print("Lid set" + str(t))
-        M_dye = client.get_node("ns=4;s=M_dye_or_No_dye")
-        if q["dye"] == "true":
-            dyeBool = True
-        else:
-            dyeBool = False
-
-        M_dye.set_value(dyeBool)
         #print("Dye set" + str(dyeBool))
-        M_Table = client.get_node("ns=4;s=M_Table_location")
+        M_Table = client.get_node(tableLoc)
         M_Table.set_value(int(q["table"]), VariantType.Int16)
 
         #print("table set" + q["table"])
-        M_process = client.get_node("ns=4;s=M_Send_Order")
+        M_process = client.get_node(MProc)
         M_process.set_value(True)
         #print("process")
         awaitOrder.set_value(False)
@@ -82,7 +98,7 @@ def orderProcess(q):
         while orderJob.meta['progress'] != "Success":
             client.disconnect()
             client.connect()
-            orderJob.meta['progress'] = client.get_node("ns=4;s=M_NDYE_INT").get_value()
+            orderJob.meta['progress'] = client.get_node(updateInt).get_value()
             orderJob.save_meta()
             sleep(1)
 

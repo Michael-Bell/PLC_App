@@ -10,7 +10,6 @@ app = Flask(__name__)
 app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
 
 rq = RQ(app)
-
 dq = deque()
 jobQueue=[]
 jobDone=[]
@@ -35,14 +34,19 @@ def screen():
 def result():
     if request.method == 'POST':
         data = request.form.to_dict()
-        #print(data)
-        from jobs import orderProcess
-        job = orderProcess.queue(data, queue='orders')
+        print(data['dye'])
+        if data['dye'] == "true":
+            from jobs import DyeOrder
+            job = DyeOrder.queue(data, queue='Dye')
+        else:
+            from jobs import NoDyeOrder
+            job = NoDyeOrder.queue(data, queue='NoDye')
         returnData = [job.id, request.form]
         jobQueue.append(job.id)
         #print(returnData)
         # return render_template("result.html", result=result1, id=job.id)
         return jsonify(returnData), 202
+
 
 @app.route('/updatescreen',methods=['GET'])
 def updateScreen():
@@ -59,10 +63,15 @@ def updateScreen():
 @app.route('/tasks/<task_id>', methods=['GET'])
 def get_status(task_id):
     with Connection(redis.from_url(app.config['RQ_REDIS_URL'])):
-        q = Queue('orders')
+        q = Queue('NoDye')
         task = q.fetch_job(task_id)
+        if task is None:
+            q = Queue("Dye")
+            task = q.fetch_job(task_id)
+        print(task)
         status = "error"
         task_percent=0
+        print
         try:
             if (task.meta=={'lid': 'true'} or task.meta=={'lid': 'false'}):
                 task_percent = "Next in line"
@@ -94,7 +103,7 @@ def get_status(task_id):
         except (TypeError):
             if task.meta['progress'] == "Success":
                 status = "Success"
-        except KeyError:
+        except (KeyError):
             print("")
 
     if task:
@@ -139,7 +148,7 @@ rq.init_app(app)
 
 if __name__ == '__main__':
     from jobs import rq
-
-    print("HI")
     rq.init_app(app)
     app.run(host='0.0.0.0')
+
+
