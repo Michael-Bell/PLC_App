@@ -11,9 +11,11 @@ app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
 
 rq = RQ(app)
 dq = deque()
-jobQueue=[]
-jobDone=[]
+jobQueue = []
+jobDone = []
 jobWork = []
+
+
 @app.route('/add/<int:x>/<int:y>')
 def add(x, y):
     from jobs import calculate
@@ -26,9 +28,11 @@ def add(x, y):
 def menu():
     return render_template('form.html')
 
+
 @app.route('/screen')
 def screen():
     return render_template('screen.html')
+
 
 @app.route('/result', methods=['POST'])
 def result():
@@ -43,22 +47,23 @@ def result():
             job = NoDyeOrder.queue(data, queue='NoDye')
         returnData = [job.id, request.form]
         jobQueue.append(job.id)
-        #print(returnData)
+        # print(returnData)
         # return render_template("result.html", result=result1, id=job.id)
         return jsonify(returnData), 202
 
 
-@app.route('/updatescreen',methods=['GET'])
+@app.route('/updatescreen', methods=['GET'])
 def updateScreen():
     print(jobQueue)
     response_object = {
         'status': 'success',
-        'data': {"q":jobQueue,
+        'data': {"q": jobQueue,
                  "w": jobWork,
                  "d": jobDone}
     }
 
     return jsonify(response_object)
+
 
 @app.route('/tasks/<task_id>', methods=['GET'])
 def get_status(task_id):
@@ -70,10 +75,10 @@ def get_status(task_id):
             task = q.fetch_job(task_id)
         print(task)
         status = "error"
-        task_percent=0
+        task_percent = 0
         print
         try:
-            if (task.meta=={'lid': 'true'} or task.meta=={'lid': 'false'}):
+            if (task.meta == {'lid': 'true'} or task.meta == {'lid': 'false'}):
                 task_percent = "Next in line"
             if 0 <= task.meta['progress'] <= 10:
                 task_percent = task.meta['progress'] * 10
@@ -123,6 +128,7 @@ def get_status(task_id):
 
 from jobs import rq
 
+
 @app.route('/manual')  # if http://{url}/manual is requested by a browser
 def manMode():
     return render_template('manual.html')  # render this template
@@ -133,22 +139,20 @@ def mresult():
     if request.method == 'POST':
         result = request.form
         data = request.form.to_dict()
-        #print(data)
-        #print(data['runmode'])  # Print selected run options for
+        # print(data)
+        # print(data['runmode'])  # Print selected run options for
         from jobs import manualMode
         job = manualMode.queue(data)
         return render_template("result.html", result=result)
 
 
-
 rq.init_app(app)
-#from jobs import checkHMI
+# from jobs import checkHMI
 
-#checkHMI.cron('* * * * *', 'Check-HMI', 1, 2)
+# checkHMI.cron('* * * * *', 'Check-HMI', 1, 2)
 
 if __name__ == '__main__':
     from jobs import rq
+
     rq.init_app(app)
     app.run(host='0.0.0.0')
-
-

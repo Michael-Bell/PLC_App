@@ -11,7 +11,8 @@ rq = RQ()
 @rq.job
 def calculate(x, y):
     print("CACL")
-    return x+y
+    return x + y
+
 
 @rq.job
 def DyeOrder(q):
@@ -20,7 +21,7 @@ def DyeOrder(q):
     tableLoc = "ns=4;s=M_Table_location"
     MProc = "ns=4;s=M_Send_Order"
     updateInt = "ns=4;s=M_NDYE_INT"
-    orderProcess(awaitOrder,lidNoLid,tableLoc, MProc, updateInt,q)
+    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
 
 
 @rq.job
@@ -30,10 +31,10 @@ def NoDyeOrder(q):
     tableLoc = "ns=4;s=M_Table_location"
     MProc = "ns=4;s=M_Send_Order"
     updateInt = "ns=4;s=M_NDYE_INT"
-    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q)
+    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
 
 
-def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q):
+def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q):
     orderJob = get_current_job()
     orderJob.meta['lid'] = q["lid"]
     orderJob.meta['progress'] = 0
@@ -42,36 +43,36 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q):
     print(orderJob.meta)
     print(orderJob.kwargs)
 
-    #print(q)
-    #print(q["lid"])
-    #print(q["dye"])
-    #print(q["table"])
+    # print(q)
+    # print(q["lid"])
+    # print(q["dye"])
+    # print(q["table"])
     isOPCAvailable = False
     try:
-        #print("Order Processing")
+        # print("Order Processing")
         client = Client("opc.tcp://192.168.0.211:4870")  # Set OPC-UA Server
-        #print("STOP")
+        # print("STOP")
         client.connect()
         awaitOrder = client.get_node(awaitOrder)
         while awaitOrder.get_value() is False:
-            #print("HMI Not ready")
+            # print("HMI Not ready")
             sleep(1.0)
-        #print("HMI is ready. Loading Values")
+        # print("HMI is ready. Loading Values")
         M_Lid = client.get_node(lidNoLid)
-        #print("Q" + q["lid"])
+        # print("Q" + q["lid"])
         if q["lid"] == "true":
             t = True
         else:
             t = False
         M_Lid.set_value(t)
-        #print("Dye set" + str(dyeBool))
+        # print("Dye set" + str(dyeBool))
         M_Table = client.get_node(tableLoc)
         M_Table.set_value(int(q["table"]), VariantType.Int16)
 
-        #print("table set" + q["table"])
+        # print("table set" + q["table"])
         M_process = client.get_node(MProc)
         M_process.set_value(True)
-        #print("process")
+        # print("process")
         awaitOrder.set_value(False)
         isOPCAvailable = True
     except OSError:
@@ -87,8 +88,8 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q):
         asdf = 0
         while asdf < 10:
             orderJob.meta['progress'] = asdf
-            #print(orderJob)
-            #print(asdf)
+            # print(orderJob)
+            # print(asdf)
             orderJob.save_meta()
             sleep(2)
             asdf = asdf + 1
@@ -108,11 +109,12 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt,q):
         print("OPC Unavailable")
     print("disconnect")
 
+
 @rq.job
 def manualMode(data):
     client = Client("opc.tcp://192.168.0.211:4870")  # Set OPC-UA Server
     if data['runmode'] == "False":
-        #print("STOP")
+        # print("STOP")
         client.connect()
         estop = client.get_node("ns=4;s=M_E_Stop")
         estop.set_value(True)
@@ -120,7 +122,7 @@ def manualMode(data):
         sendorder.set_value(False)
         client.disconnect()
     else:
-        #print("START")
+        # print("START")
         client.connect()
         estop = client.get_node("ns=4;s=M_E_Stop")
         estop.set_value(False)
@@ -128,6 +130,7 @@ def manualMode(data):
         sendorder.set_value(True)
         client.disconnect()
     return True
+
 
 @rq.job
 def checkHMI():
