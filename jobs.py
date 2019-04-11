@@ -20,8 +20,9 @@ def DyeOrder(q):
     lidNoLid = "ns=4;s=M_DYE_Lid_or_No_Lid"
     tableLoc = "ns=4;s=M_DYE_Table_location"
     MProc = "ns=4;s=M_Send_Order"
-    updateInt = "ns=4;s=M_DYE_INT"
-    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
+    updateCounter = "ns=4;s=M_DYE_STAT_COUNTER"
+    updateInt = "ns=4;s=M_DYE_STAT_INT"
+    orderProcess(True, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter, updateInt, q)
 
 
 @rq.job
@@ -30,11 +31,12 @@ def NoDyeOrder(q):
     lidNoLid = "ns=4;s=NDYE_Lid_or_No_Lid"
     tableLoc = "ns=4;s=NDYE_Table_location"
     MProc = "ns=4;s=NDYE_Send_order"
-    updateInt = "ns=4;s=NDYE_Fill_No_DYE_STAT_INT"
-    orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q)
+    updateCounter = "ns=4;s=NDYE_STAT_COUNTER"
+    updateInt = "ns=4;s=NDYE_STAT_INT"
+    orderProcess(False, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter,updateInt, q)
 
 
-def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q):
+def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter, updateInt, q):
     orderJob = get_current_job()
     orderJob.meta['lid'] = q["lid"]
     orderJob.meta['progress'] = 0
@@ -42,7 +44,10 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q):
     print(orderJob)
     print(orderJob.meta)
     print(orderJob.kwargs)
-
+    kukaDoneID = "ns=4;s=DI_KUKA_SIGNAL_DONE"
+    kukaRunningID = "ns=4;s=DI_KUKA_SIGNAL_START"
+    kukaWaitingID = "ns=4;s=DI_KUKA_SIGNAL_WAITING_ORDER"
+    selectedQueueID = "ns=4;s=SELECTED_QUEUE"
     # print(q)
     # print(q["lid"])
     # print(q["dye"])
@@ -96,12 +101,22 @@ def orderProcess(awaitOrder, lidNoLid, tableLoc, MProc, updateInt, q):
         orderJob.meta['progress'] = "Success"
         orderJob.save_meta()
     else:
-        while orderJob.meta['progress'] != 8:
-            client.disconnect()
-            client.connect()
-            orderJob.meta['progress'] = client.get_node(updateInt).get_value()
+        while orderJob.meta['progress'] != 11:
+            countVal = client.get_node(updateCounter).get_value()
+            intVal = client.get_node(updateInt).get_value()
+            kukaQueue = client.get_node(selectedQueueID).get_value()
+            kukaRun = client.get_node(kukaRunningID).get_value()
+            kukaDone = client.get_node(kukaDoneID).get_value()
+
+            if ((((kukaQueue=="True") & (queueType==True)) or ((kukaQueue=="False") & (queueType==False))) & ((kukaRun=="True") or (kukaDone == "True"))): # IF The selected queue and working queue match, AND the kuka is in run sequence
+                orderJob.meta['progress'] = intVal
+            else:
+                orderJob.meta['progress'] = countVal
             orderJob.save_meta()
             sleep(1)
+
+
+
 
     try:
         client.disconnect()
