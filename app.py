@@ -7,7 +7,7 @@ from flask_rq2 import RQ
 from rq import Queue, Connection
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
 
 rq = RQ(app)
 dq = deque()
@@ -85,6 +85,7 @@ def get_status(task_id):
         except (KeyError):
             status = "Queued"
         try:
+            print("PROGRESS" + str(task.meta['progress']))
             if task.meta['progress'] == 0:
                 status = "Next in Line"
             elif task.meta['progress'] == 1:
@@ -102,6 +103,12 @@ def get_status(task_id):
             elif task.meta['progress'] == 7:
                 status = "At Lid Station"
             elif task.meta['progress'] == 8:
+                status = "Waiting for arm"
+            elif task.meta['progress'] == 9:
+                status = "at lid station2"
+            elif task.meta['progress'] == 10:
+                status = "leaving lid station"
+            elif task.meta['progress'] == 11:
                 status = "Success"
             else:
                 status = "Unknown Status"

@@ -33,7 +33,7 @@ def NoDyeOrder(q):
     MProc = "ns=4;s=NDYE_Send_order"
     updateCounter = "ns=4;s=NDYE_STAT_COUNTER"
     updateInt = "ns=4;s=NDYE_STAT_INT"
-    orderProcess(False, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter,updateInt, q)
+    orderProcess(False, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter, updateInt, q)
 
 
 def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter, updateInt, q):
@@ -102,21 +102,39 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
         orderJob.save_meta()
     else:
         while orderJob.meta['progress'] != 11:
+            client.disconnect()
+            client.connect()
             countVal = client.get_node(updateCounter).get_value()
             intVal = client.get_node(updateInt).get_value()
             kukaQueue = client.get_node(selectedQueueID).get_value()
             kukaRun = client.get_node(kukaRunningID).get_value()
             kukaDone = client.get_node(kukaDoneID).get_value()
+            print("Count" + str(countVal))
+            print("INT COUNT" + str(intVal))
+            print("kuka q" + str(kukaQueue))
+            print("Kuka run" + str(kukaRun))
+            print("kuka done" + str(kukaDone))
+            print("quetype" + str(queueType))
+            if(kukaQueue=="True"):
+                print("kukaque is true")
+            else:
+                print("kukaqueue is false")
+            if kukaRun is True:
+                print("kukarun is true")
+            else:
+                print("kukarun is false")
+            if queueType is True:
+                print("qt is true")
+            else:
+                print("qt is false")
 
-            if ((((kukaQueue=="True") & (queueType==True)) or ((kukaQueue=="False") & (queueType==False))) & ((kukaRun=="True") or (kukaDone == "True"))): # IF The selected queue and working queue match, AND the kuka is in run sequence
+            if (((kukaQueue is True) and (queueType is True)) or ((kukaQueue is False) and (queueType is False)) and ((kukaRun is True) or (kukaDone is True)) ):  # IF The selected queue and working queue match, AND the kuka is in run sequence
+                print("all true")
                 orderJob.meta['progress'] = intVal
             else:
                 orderJob.meta['progress'] = countVal
             orderJob.save_meta()
             sleep(1)
-
-
-
 
     try:
         client.disconnect()
