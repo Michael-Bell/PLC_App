@@ -128,7 +128,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             else:
                 print("qt is false")
 
-            if (((kukaQueue is True) and (queueType is True)) or ((kukaQueue is False) and (queueType is False)) and ((kukaRun is True) or (kukaDone is True)) ):  # IF The selected queue and working queue match, AND the kuka is in run sequence
+            if ((kukaQueue == queueType) and ((kukaRun is True) or (kukaDone is True)) ):  # IF The selected queue and working queue match, AND the kuka is in run sequence
                 print("all true")
                 orderJob.meta['progress'] = intVal
             else:
