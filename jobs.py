@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from escpos.printer import Usb
 
-@rq.jobzx
+@rq.job
 def calculate(x, y):
     print("CACL")
     return x + y
