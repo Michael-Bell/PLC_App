@@ -1,5 +1,6 @@
 from collections import deque
 from time import sleep
+from jobs import rq
 
 import redis
 from flask import Flask, request, render_template, jsonify
@@ -7,7 +8,7 @@ from flask_rq2 import RQ
 from rq import Queue, Connection
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
 
 rq = RQ(app)
 dq = deque()
@@ -76,9 +77,8 @@ def get_status(task_id):
         print(task)
         status = "error"
         task_percent = 0
-        print
         try:
-            if (task.meta == {'lid': 'true'} or task.meta == {'lid': 'false'}):
+            if task.meta == {'lid': 'true'} or task.meta == {'lid': 'false'}:
                 task_percent = "Next in line"
             if 0 <= task.meta['progress'] <= 10:
                 task_percent = task.meta['progress'] * 10
@@ -97,18 +97,16 @@ def get_status(task_id):
             elif task.meta['progress'] == 4:
                 status = "Bottle Filled"
             elif task.meta['progress'] == 5:
-                status = "On Belt"
+                status = "Waiting for Arm"
             elif task.meta['progress'] == 6:
-                status = "Waiting for Kuka Arm"
+                status = "Arm Ready"
             elif task.meta['progress'] == 7:
-                status = "At Lid Station"
+                status = "Arm moving Bottle"
             elif task.meta['progress'] == 8:
-                status = "Waiting for arm"
+                status = "At Lidding Station"
             elif task.meta['progress'] == 9:
-                status = "at lid station2"
+                status = "Lid Placed"
             elif task.meta['progress'] == 10:
-                status = "leaving lid station"
-            elif task.meta['progress'] == 11:
                 status = "Success"
             else:
                 status = "Unknown Status"
@@ -133,9 +131,6 @@ def get_status(task_id):
     return jsonify(response_object)
 
 
-from jobs import rq
-
-
 @app.route('/manual')  # if http://{url}/manual is requested by a browser
 def manMode():
     return render_template('manual.html')  # render this template
@@ -149,7 +144,7 @@ def mresult():
         # print(data)
         # print(data['runmode'])  # Print selected run options for
         from jobs import manualMode
-        job = manualMode.queue(data)
+        # job = manualMode.queue(data)
         return render_template("result.html", result=result)
 
 
