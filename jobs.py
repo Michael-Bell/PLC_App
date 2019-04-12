@@ -101,7 +101,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
         orderJob.meta['progress'] = "Success"
         orderJob.save_meta()
     else:
-        while orderJob.meta['progress'] != 11:
+        while orderJob.meta['progress'] != 10:
             client.disconnect()
             client.connect()
             countVal = client.get_node(updateCounter).get_value()
@@ -109,26 +109,26 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             kukaQueue = client.get_node(selectedQueueID).get_value()
             kukaRun = client.get_node(kukaRunningID).get_value()
             kukaDone = client.get_node(kukaDoneID).get_value()
-            print("Count" + str(countVal))
-            print("INT COUNT" + str(intVal))
-            print("kuka q" + str(kukaQueue))
-            print("Kuka run" + str(kukaRun))
-            print("kuka done" + str(kukaDone))
-            print("quetype" + str(queueType))
-            if(kukaQueue=="True"):
-                print("kukaque is true")
-            else:
-                print("kukaqueue is false")
-            if kukaRun is True:
-                print("kukarun is true")
-            else:
-                print("kukarun is false")
-            if queueType is True:
-                print("qt is true")
-            else:
-                print("qt is false")
+            # print("Count" + str(countVal))
+            # print("INT COUNT" + str(intVal))
+            # print("kuka q" + str(kukaQueue))
+            # print("Kuka run" + str(kukaRun))
+            # print("kuka done" + str(kukaDone))
+            # print("quetype" + str(queueType))
+            # if(kukaQueue=="True"):
+            #     print("kukaque is true")
+            # else:
+            #     print("kukaqueue is false")
+            # if kukaRun is True:
+            #     print("kukarun is true")
+            # else:
+            #     print("kukarun is false")
+            # if queueType is True:
+            #     print("qt is true")
+            # else:
+            #     print("qt is false")
 
-            if ((kukaQueue == queueType) and ((kukaRun is True) or (kukaDone is True)) ):  # IF The selected queue and working queue match, AND the kuka is in run sequence
+            if ((kukaQueue is True) and (queueType is True)) or ((kukaQueue is False) and (queueType is False)) and ((kukaRun is True) or (kukaDone is True)):  # IF The selected queue and working queue match, AND the kuka is in run sequence
                 print("all true")
                 orderJob.meta['progress'] = intVal
             else:

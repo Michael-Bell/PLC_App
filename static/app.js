@@ -1,7 +1,3 @@
-function getStatus(d) {
-    console.print(d);
-    objdata = d;
-}
 
 order = []
 $('#orderButton').on('click', function () {
@@ -18,7 +14,7 @@ $('#orderButton').on('click', function () {
             $('#respName').append(res[1].name);
             $('#respDye').prepend(
                 function () {
-                    if (res[1].dye == "true") {
+                    if (res[1].dye === "true") {
                         return "with"
                     }
                     return "without"
@@ -26,7 +22,7 @@ $('#orderButton').on('click', function () {
 
             $('#respLid').prepend(
                 function () {
-                    if (res[1].lid == "true") {
+                    if (res[1].lid === "true") {
                         return "with"
                     }
                     return "without"
@@ -69,7 +65,7 @@ function getStatus(taskID) {
             console.log(res);
             console.log(res.data.task_percent)
             $("#orderProgressBar").width(res.data.task_percent + "%").attr("aria-valuenow", res.data.task_percent);
-            if (res.data.task_percent == 100) {
+            if (res.data.task_percent === 100) {
                 $("#orderProgressBar").addClass("bg-success").removeClass("progress-bar-striped");
             }
             $('.orderStatus').text(res.data.task_status);
