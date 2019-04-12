@@ -48,6 +48,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
            orderJob.meta['phone'] = q['phone']
     except:
         print("no phone#")
+        orderJob.meta['phone'] = "0"
     orderJob.save_meta()
     print(orderJob)
     print(orderJob.meta)
@@ -150,8 +151,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
         print("OPC Unavailable")
     print("disconnect")
     #send sms
-    if orderJob.meta['phone']:
-        try:
+    try:
             name = ""
             if q['name']:
                 name = q['name']
@@ -163,7 +163,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
                 client = tClient(os.getenv("TSID"), os.getenv("TAUTH"))
                 message = client.messages.create(body=str("Hello "+name + "\n Your order is ready at mobile pickup :)"), from_='+16042565679', to=number)
                 print(message.sid)
-        except:
+    except:
             print("SMS Failed to send")
     try:
         printer = Usb(0x04b8, 0x0203)
