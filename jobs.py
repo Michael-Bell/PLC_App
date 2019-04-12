@@ -9,8 +9,9 @@ rq = RQ()
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from escpos.printer import Usb
 
-@rq.job
+@rq.jobzx
 def calculate(x, y):
     print("CACL")
     return x + y
@@ -161,6 +162,25 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
                 print(message.sid)
         except:
             print("SMS Failed to send")
+    try:
+        printer = Usb(0x04b8, 0x0203)
+        printer.set(font='a', height=2, align='CENTER', text_type="bold")
+        printer.image("cup.gif")
+        if q['name']:
+            printer.text(q['name']+"\n")
+        else:
+            printer.text("No Name\n")
+        printer.set(font='a', height=1, align='left', text_type='normal')
+        printer.text(str("Dye" + queueType))
+        printer.text(str(" || Lid"+lidNoLid + "\n"))
+        printer.set(font='a', height=2, align='center', text_type="bold")
+        tableprint = str(tableLoc)
+        if tableLoc == 4:
+            tableprint = "Mobile Pickup"
+        printer.text(str("Table "+ tableLoc+"\n"))
+
+    except:
+        print("printer error")
 
 @rq.job
 def manualMode(data):

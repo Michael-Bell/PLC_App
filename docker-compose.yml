@@ -24,15 +24,23 @@ services:
     rq-worker-NoDye:
       image: m8377/plc_app_ufv:latest
       command: rq worker -u redis://rq-server:6379 NoDye
+      environment:
+        - TAUTH=${TAUTH}
+        - TSID=${TSID}
       depends_on:
         - rq-server
       restart: always
+      privileged: true
     rq-worker-Dye:
       image: m8377/plc_app_ufv:latest
       command: rq worker -u redis://rq-server:6379 Dye
+      environment:
+        - TAUTH=${TAUTH}
+        - TSID=${TSID}
       depends_on:
         - rq-server
       restart: always
+      privileged: true
     ouroboros:
       container_name: ouroboros
       hostname: ouroboros

@@ -6,3 +6,4 @@ opcua
 twilio
 phonenumbers
 python-dotenv
+python-escpos
