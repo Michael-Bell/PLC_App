@@ -1,12 +1,14 @@
 from time import sleep
-
+from twilio.rest import Client as tClient
 from flask_rq2 import RQ
 from opcua import Client
 from opcua.ua import VariantType
 from rq import get_current_job
-
+import phonenumbers
 rq = RQ()
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 @rq.job
 def calculate(x, y):
@@ -40,6 +42,8 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
     orderJob = get_current_job()
     orderJob.meta['lid'] = q["lid"]
     orderJob.meta['progress'] = 0
+    if q['phone']:
+       orderJob.meta['phone'] = q['phone']
     orderJob.save_meta()
     print(orderJob)
     print(orderJob.meta)
@@ -96,9 +100,9 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             # print(orderJob)
             # print(asdf)
             orderJob.save_meta()
-            sleep(2)
+            sleep(.5)
             asdf = asdf + 1
-        orderJob.meta['progress'] = "Success"
+        orderJob.meta['progress'] = 10
         orderJob.save_meta()
     else:
         while orderJob.meta['progress'] != 10:
@@ -141,7 +145,22 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
     except (OSError, AttributeError) as e:
         print("OPC Unavailable")
     print("disconnect")
-
+    #send sms
+    if orderJob.meta['phone']:
+        try:
+            name = ""
+            if q['name']:
+                name = q['name']
+            n = phonenumbers.parse(orderJob.meta['phone'],"CA")
+            if phonenumbers.is_possible_number(n):
+                number = phonenumbers.format_number(n, phonenumbers.PhoneNumberFormat.E164)
+                print(os.getenv("TSID"))
+                print(os.getenv("TAUTH"))
+                client = tClient(os.getenv("TSID"), os.getenv("TAUTH"))
+                message = client.messages.create(body=str("Hello "+name + "\n Your order is ready at mobile pickup :)"), from_='+16042565679', to=number)
+                print(message.sid)
+        except:
+            print("SMS Failed to send")
 
 @rq.job
 def manualMode(data):

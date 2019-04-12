@@ -3,3 +3,6 @@ redis
 rq
 flask-rq2
 opcua
+twilio
+phonenumbers
+python-dotenv

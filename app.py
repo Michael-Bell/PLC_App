@@ -1,16 +1,16 @@
 from collections import deque
 from time import sleep
-from jobs import rq
 
+from jobs import rq
 import redis
 from flask import Flask, request, render_template, jsonify
 from flask_rq2 import RQ
 from rq import Queue, Connection
 
 app = Flask(__name__)
-app.config['RQ_REDIS_URL'] = 'redis://rq-server:6379/0'
+app.config['RQ_REDIS_URL'] = 'redis://localhost:6379/0'
 
-rq = RQ(app)
+#rq = RQ(app)
 dq = deque()
 jobQueue = []
 jobDone = []
@@ -39,7 +39,7 @@ def screen():
 def result():
     if request.method == 'POST':
         data = request.form.to_dict()
-        print(data['dye'])
+        print(data)
         if data['dye'] == "true":
             from jobs import DyeOrder
             job = DyeOrder.queue(data, queue='Dye')
@@ -146,7 +146,6 @@ def mresult():
         from jobs import manualMode
         # job = manualMode.queue(data)
         return render_template("result.html", result=result)
-
 
 rq.init_app(app)
 # from jobs import checkHMI

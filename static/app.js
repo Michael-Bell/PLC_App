@@ -79,3 +79,13 @@ function getStatus(taskID) {
             console.log(err)
         });
 }
+$("#line45").hide();
+
+   $('#table').on('change',function(){
+        if( $(this).val()==="4"){
+        $("#line45").show()
+        }
+        else{
+        $("#line45").hide()
+        }
+    });
