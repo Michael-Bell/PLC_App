@@ -43,8 +43,11 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
     orderJob = get_current_job()
     orderJob.meta['lid'] = q["lid"]
     orderJob.meta['progress'] = 0
-    if q['phone']:
-       orderJob.meta['phone'] = q['phone']
+    try:
+        if q['phone']:
+           orderJob.meta['phone'] = q['phone']
+    except:
+        print("no phone#")
     orderJob.save_meta()
     print(orderJob)
     print(orderJob.meta)
