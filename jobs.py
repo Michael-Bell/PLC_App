@@ -181,6 +181,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             tableprint = "Mobile Pickup"
         printer.text(str("Table " + tableprint + "\n"))
         printer.cut()
+        printer.close()
 
     except:
         print("printer error")
