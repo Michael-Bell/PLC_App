@@ -166,3 +166,5 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/venv,macos,linux,pycharm,windows
 .env
 *.env
+
+**dump.rdb
