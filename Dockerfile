@@ -1,4 +1,4 @@
-From m8377/plc_app_ufv:latest
+From python:3.6
 Add . /code
 WORKDIR /code
 RUN apt update
