@@ -105,7 +105,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             # print(orderJob)
             # print(asdf)
             orderJob.save_meta()
-            sleep(.5)
+            sleep(.05)
             asdf = asdf + 1
         orderJob.meta['progress'] = 10
         orderJob.save_meta()
@@ -118,26 +118,26 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             kukaQueue = client.get_node(selectedQueueID).get_value()
             kukaRun = client.get_node(kukaRunningID).get_value()
             kukaDone = client.get_node(kukaDoneID).get_value()
-            # print("Count" + str(countVal))
-            # print("INT COUNT" + str(intVal))
-            # print("kuka q" + str(kukaQueue))
-            # print("Kuka run" + str(kukaRun))
-            # print("kuka done" + str(kukaDone))
-            # print("quetype" + str(queueType))
-            # if(kukaQueue=="True"):
-            #     print("kukaque is true")
-            # else:
-            #     print("kukaqueue is false")
-            # if kukaRun is True:
-            #     print("kukarun is true")
-            # else:
-            #     print("kukarun is false")
-            # if queueType is True:
-            #     print("qt is true")
-            # else:
-            #     print("qt is false")
+            print("Count" + str(countVal))
+            print("INT COUNT" + str(intVal))
+            print("kuka q" + str(kukaQueue))
+            print("Kuka run" + str(kukaRun))
+            print("kuka done" + str(kukaDone))
+            print("quetype" + str(queueType))
+            if(kukaQueue):
+                print("kukaque is true")
+            else:
+                print("kukaqueue is false")
+            if kukaRun:
+                print("kukarun is true")
+            else:
+                print("kukarun is false")
+            if queueType:
+                print("qt is true")
+            else:
+                print("qt is false")
 
-            if ((kukaQueue is True) and (queueType is True)) or ((kukaQueue is False) and (queueType is False)) and ((kukaRun is True) or (kukaDone is True)):  # IF The selected queue and working queue match, AND the kuka is in run sequence
+            if kukaQueue == queueType and (kukaRun or kukaDone ):  # IF The selected queue and working queue match, AND the kuka is in run sequence
                 print("all true")
                 orderJob.meta['progress'] = intVal
             else:
@@ -169,18 +169,18 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
         printer = Usb(0x04b8, 0x0203)
         printer.set(font='a', height=2, align='CENTER', text_type="bold")
         printer.image("cup.gif")
-        if q['name']:
+        try:
             printer.text(q['name']+"\n")
-        else:
+        except:
             printer.text("No Name\n")
-        printer.set(font='a', height=1, align='left', text_type='normal')
-        printer.text(str("Dye" + queueType))
-        printer.text(str(" || Lid"+lidNoLid + "\n"))
-        printer.set(font='a', height=2, align='center', text_type="bold")
-        tableprint = str(tableLoc)
-        if tableLoc == 4:
+        printer.set(font='a', height=1, align='center', text_type='normal')
+        printer.text(str("Dye: " + str(queueType) + " || Lid: " + str(q["lid"]) + "\n"))
+        printer.set(font='b', height=1, align='center', text_type="bold")
+        tableprint = str(int(q["table"]))
+        if int(q["table"]) == 4:
             tableprint = "Mobile Pickup"
-        printer.text(str("Table "+ tableLoc+"\n"))
+        printer.text(str("Table " + tableprint + "\n"))
+        printer.cut()
 
     except:
         print("printer error")
