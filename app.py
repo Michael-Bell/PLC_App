@@ -109,7 +109,7 @@ def get_status(task_id):
             elif task.meta['progress'] == 10:
                 status = "Success"
             else:
-                status = "Unknown Status"
+                status = "Error"
         except (TypeError):
             if task.meta['progress'] == "Success":
                 status = "Success"

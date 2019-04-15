@@ -71,6 +71,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
         while awaitOrder.get_value() is False:
             # print("HMI Not ready")
             sleep(1.0)
+        sleep(6.0) # Need extra sleep to let all previous sequences clear out and become complete.
         # print("HMI is ready. Loading Values")
         M_Lid = client.get_node(lidNoLid)
         # print("Q" + q["lid"])
@@ -118,6 +119,7 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
             kukaQueue = client.get_node(selectedQueueID).get_value()
             kukaRun = client.get_node(kukaRunningID).get_value()
             kukaDone = client.get_node(kukaDoneID).get_value()
+            estopstat = client.get_node("ns=4;s=M_E_Stop")
             print("Count" + str(countVal))
             print("INT COUNT" + str(intVal))
             print("kuka q" + str(kukaQueue))
@@ -142,6 +144,8 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
                 orderJob.meta['progress'] = intVal
             else:
                 orderJob.meta['progress'] = countVal
+            if estopstat:
+                orderJob.meta['progress'] = 30
             orderJob.save_meta()
             sleep(1)
 
