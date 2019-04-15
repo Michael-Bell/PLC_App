@@ -146,6 +146,8 @@ def orderProcess(queueType, awaitOrder, lidNoLid, tableLoc, MProc, updateCounter
                 orderJob.meta['progress'] = countVal
             if estopstat:
                 orderJob.meta['progress'] = 30
+                orderJob.save_meta()
+                return
             orderJob.save_meta()
             sleep(1)
 

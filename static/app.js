@@ -65,12 +65,21 @@ function getStatus(taskID) {
             console.log(res);
             console.log(res.data.task_percent)
             $("#orderProgressBar").width(res.data.task_percent + "%").attr("aria-valuenow", res.data.task_percent);
+            if(0 <= res.data.task_percent < 100){
+                $("#OrderProgressBar").addClass("bg-info").removeClass("bg-success").removeClass("progress-bar-striped");
+            }
             if (res.data.task_percent === 100) {
                 $("#orderProgressBar").addClass("bg-success").removeClass("progress-bar-striped");
             }
+            if(res.data.task_status === "Error"){
+                $("#orderProgressBar").addClass("bg-danger").removeClass("bg-success").removeClass("bg-info").removeClass("progress-bar-striped");
+                $("#orderProgressBar").width(100 + "%").attr("aria-valuenow", 100);
+
+            }
+
             $('.orderStatus').text(res.data.task_status);
             const taskStatus = res.data.task_status;
-            if (taskStatus === 'Success' || taskStatus === 'failed') return false;
+            if (taskStatus === 'Success' || taskStatus === 'failed' || taskStatus === "Error") return false;
             setTimeout(function () {
                 getStatus(res.data.task_id);
             }, 750);
