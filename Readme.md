@@ -3,6 +3,11 @@ PLC Web App Project
 
 For UFV Capstone project
 
+Arduino Code
+----
+[aott33/Gripper_control](https://github.com/aott33/Gripper_control)
+
+
 Requirments
 --
 - Python 3.6 (NOT 3.7)
@@ -14,10 +19,8 @@ Requirments
 
 How to Run Server
 ----
-1. Install and run "Redis Server"
-2. Run `rq worker high normal low default` to launch background worker for main tasks
-3. Run `rq worker orders` to launch background worker for Order processing
-4. Run App.py
+1. Install Docker and docker-compose
+2. Run `docker-compose up`
 
 
 Environment Settings
